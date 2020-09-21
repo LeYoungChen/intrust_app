@@ -5,6 +5,8 @@ import 'package:intrust/pages/recommend.dart';
 import 'package:intrust/pages/optional.dart';
 import 'package:intrust/pages/backtest.dart';
 import 'package:intrust/pages/machine.dart';
+import 'package:intrust/pages/stockDetail.dart';
+
 
 
 import 'recommend.dart';
@@ -12,157 +14,100 @@ import 'optional.dart';
 import 'backtest.dart';
 import 'machine.dart';
 
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:flutter/cupertino.dart';
+
+import 'package:flutter_icons/flutter_icons.dart';
+
 class Home extends StatefulWidget {
+  Home({Key key, this.title}) : super(key: key);
+
+  final String title;
+
   @override
   _HomeState createState() => _HomeState();
 }
 
+
 class _HomeState extends State<Home> {
 
+  /// PersistentTabController是來自第三方的widget
+  /// 用於實現持續的bottom tab bar
+  final navigatorKey = GlobalKey<NavigatorState>();
 
-  // Properties
+  PersistentTabController _controller = PersistentTabController(initialIndex: 0);
 
-  int currentTab = 0; // to keep track of active tab index
-  final List<Widget> screens = [
-    recommend(),
-    optional(),
-    backtest(),
-    machine(),
-  ]; // to store tab views
+  /// 此List提供了bottom tab bar裡的tabs
+  List<Widget> _NavScreens(){
+    return[
+      recommend(),
+      optional(),
+      stockDetail(),
+      backtest(),
+      machine(),
+    ];
+  }
 
-  Widget currentScreen = recommend(); // initial pages
+  /// 此List提供了tabs的properties
+  /// 包括icons，titles，active和inactive colors
+  List<PersistentBottomNavBarItem> _navBarsItems() {
+    return [
+      PersistentBottomNavBarItem(
+        icon: Icon(Octicons.bookmark),
+        title: ("推薦"),
+        activeColor: CupertinoColors.systemRed,
+        inactiveColor: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Octicons.list_unordered),
+        title: ("自選"),
+        activeColor: CupertinoColors.systemRed,
+        inactiveColor: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Octicons.person),
+        title: ("InTrust"),
+        activeColor: CupertinoColors.systemRed,
+        inactiveColor: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Octicons.graph),
+        title: ("回測"),
+        activeColor: CupertinoColors.systemRed,
+        inactiveColor: CupertinoColors.systemGrey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Octicons.device_desktop),
+        title: ("機器股"),
+        activeColor: CupertinoColors.systemRed,
+        inactiveColor: CupertinoColors.systemGrey,
+      ),
 
-  final PageStorageBucket bucket = PageStorageBucket();
+    ];
+  }
 
-
+  /// 提供PersistentTabView的properties
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageStorage(
-        child: currentScreen,
-        bucket: bucket,
-      ),
-
-      // FAB Button
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        backgroundColor: Colors.red,
-        onPressed: (){
-        },
-      ),
-
-      // FAB positioning
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      // Bottom tabs
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
-        elevation: 0.2,
-        shape: CircularNotchedRectangle(),
-        notchMargin: 10,
-        child: Container(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: (){
-                      setState(() {
-                        currentScreen = recommend();
-                        currentTab = 0;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                      Icon(
-                        Icons.format_line_spacing,
-                        color: currentTab == 0 ? Colors.redAccent : Colors.grey,),
-                      Text(
-                        '推薦',
-                        style: TextStyle(
-                          color: currentTab == 0 ? Colors.redAccent : Colors.grey, ),)
-                    ],),
-                  ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: (){
-                      setState(() {
-                        currentScreen = optional();
-                        currentTab = 1;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                      Icon(
-                        Icons.offline_pin,
-                        color: currentTab == 1 ? Colors.redAccent : Colors.grey,),
-                      Text(
-                        '自選',
-                        style: TextStyle(
-                          color: currentTab == 1 ? Colors.redAccent : Colors.grey, ),)
-                    ],),
-                  ),
-                ],
-              ),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: (){
-                      setState(() {
-                        currentScreen = backtest();
-                        currentTab = 2;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.replay,
-                          color: currentTab == 2 ? Colors.redAccent : Colors.grey,),
-                        Text(
-                          '回測',
-                          style: TextStyle(
-                            color: currentTab == 2 ? Colors.redAccent : Colors.grey, ),)
-                      ],),
-                  ),
-                  MaterialButton(
-                    minWidth: 40,
-                    onPressed: (){
-                      setState(() {
-                        currentScreen = machine();
-                        currentTab = 3;
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.android,
-                          color: currentTab == 3 ? Colors.redAccent : Colors.grey,),
-                        Text(
-                          '機器股',
-                          style: TextStyle(
-                            color: currentTab == 3 ? Colors.redAccent : Colors.grey, ),)
-                      ],),
-                  ),
-                ],
-              )
-
-            ],
-          ),
+    return Center(
+      child: PersistentTabView(
+        controller: _controller,
+        screens: _NavScreens(),
+        items: _navBarsItems(),
+        confineInSafeArea: true,
+        backgroundColor: Colors.white,
+        handleAndroidBackButtonPress: true,
+        resizeToAvoidBottomInset: true,
+        hideNavigationBarWhenKeyboardShows: true,
+        decoration: NavBarDecoration(
+          borderRadius: BorderRadius.circular(10.0),
         ),
+        popAllScreensOnTapOfSelectedTab: true,
+        /// navBarStyle 提供不同的風格
+        /// 通過更改號碼自動修改風格
+        navBarStyle: NavBarStyle.style8,
       ),
-
     );
-
   }
+
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intrust/pages/home.dart';
+import 'package:intrust/pages/recommend.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primaryColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'DIN2014',
       ),
       home: Home(),
     );
